@@ -318,7 +318,7 @@ class AgentInit:
         multi_agent_system = AgentWorkflow(
             agents=[router_agent, health_advice_agent, subscription_agent, troubleshooting_agent, refit_agent],
             root_agent="路由智能体",
-            verbose=True  # 启用详细日志
+            verbose=False  # 启用详细日志
         )
 
         return multi_agent_system
