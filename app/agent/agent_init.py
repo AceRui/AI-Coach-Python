@@ -48,11 +48,12 @@ class AgentInit:
     - 使用指南问题: 
         - 修改workout plan，包括以下修改点: 
             - workout_type: 运动类型
+            - cancel_workout_type: 需要取消的运动类型
             - workout_duration: 运动时长区间
-            - target_position: 目标锻炼部位
-            - avoid_position: 避免锻炼部位
+            - physical_limitation: 避免锻炼部位
             - equipment: 运动器械
             - coach: 教练性别
+            - preferred_position: 运动姿势
         - 修改basic information，包括以下修改点: 
             - nickname: 用户昵称
             - age: 用户年龄
@@ -199,24 +200,28 @@ class AgentInit:
         - 功能: 修改用户的训练计划设置
         - 参数: （所有参数均为字符串类型，不需要全部提供，未提供的参数使用""）
             - workout_type:
-                - description:运动类型
-                - enum value: ["standing_exercises", "sitting_exercises"]
+                - description: 运动类型
+                - enum value: ["chair_yoga", "chair_cardio", "tai_chi", "gentle_cardio", "indoor_walking", "dancing", "i_want_all"]
             - workout_duration:
                 - description: 运动时长区间
                 - enum value: ["5-10", "10-15", "15-20", "20-30"]
                 - unit: minute
-            - target_position:
-                - description: 目标锻炼部位
-                - enum value: ["shoulder", "back"]
-            - avoid_position:
+            - physical_limitation:
                 - description: 避免锻炼部位
-                - enum value: ["knee", "waist"]
+                - enum value: ["knee", "back", "shoulder", "wrist", "hip", "ankle", "i'm_all_good"]
             - equipment:
                 - description: 运动器械
-                - enum value: ["dumbbell", "resistance_band"]
+                - enum value: ["dumbbell", "resistance_band", "no_equipment"]
             - coach:
                 - description: 教练性别
-                - enum value: ["male", "female", "both"]
+                - enum value: ["male", "female", "mixed_coaches"]
+            - preferred_position:
+                - description: 运动姿势
+                - enum value: ["standing", "seated_on_chair", "i_want_both"]
+            - cancel_workout_type:
+                - description: 需要取消的运动类型
+                - enum value: ["chair_yoga", "chair_cardio", "tai_chi", "gentle_cardio", "indoor_walking", "dancing", "i_want_all"]
+            
     - 工具二: 
         - 名称: update_basic_information_tool
         - 功能: 修改用户的基础信息，包括昵称、年龄、身高、体重
