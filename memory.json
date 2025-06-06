@@ -1,0 +1,10 @@
+{
+    "role": "user",
+    "additional_kwargs": {},
+    "blocks": [
+        {
+            "block_type": "text",
+            "text": "\u4f60\u597d\uff01"
+        }
+    ]
+}

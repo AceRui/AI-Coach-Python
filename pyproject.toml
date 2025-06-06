@@ -1,0 +1,22 @@
+[project]
+name = "ai-coach-llamaindex"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    "fastapi~=0.110.0",
+    "uvicorn~=0.28.0",
+    "python-dotenv~=1.0.0",
+    "pydantic~=2.11.5",
+    "pydantic-settings~=2.9.1",
+    "loguru~=0.7.3",
+    "requests~=2.32.3",
+    "streamlit~=1.37.0",
+    "llama-index~=0.12.35",
+    "llama-index-llms-google-genai~=0.1.12",
+    "redis~=6.1.0",
+    "orjson~=3.10.18",
+    "llama-index-storage-chat-store-redis~=0.4.1",
+]
