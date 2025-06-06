@@ -50,29 +50,21 @@ class UpdateBasicInformationArgs(BaseModel):
 
 
 async def safe_put_with_retry(
-        payload: Dict[str, Any], request_name: str, ctx: Context, retry_num: int = 3
+    payload: Dict[str, Any], request_name: str, ctx: Context
 ) -> Dict[str, Any]:
-    attempts = 0
-    while attempts < retry_num:
-        try:
-            user_email = await ctx.get("user_id")
-            result = post_msg(user_email=user_email, msg=payload)
-            if result:
-                return {"success": True}
-            else:
-                raise Exception("调用工具失败")
-        except Exception as e:
-            attempts += 1
-            logger.warning(
-                f"修改用户的 {request_name} 失败, 开始第{attempts}次重试, Exception: {e}"
-            )
-    if retry_num == 3:
-        logger.error(f"{retry_num}次修改用户的 {request_name} 均失败")
-        return {"status": False}
+    try:
+        user_email = await ctx.get("user_id")
+        result = post_msg(user_email=user_email, msg=payload)
+        if result:
+            return {"success": True}
+        else:
+            raise Exception("调用工具失败")
+    except Exception as e:
+        logger.error(f"修改用户的 {request_name} 失败, Exception: {e}")
 
 
 async def update_ctx_data(
-        ctx: Context, key: str, value: Any, payload: Dict[str, Any], state_key: str
+    ctx: Context, key: str, value: Any, payload: Dict[str, Any], state_key: str
 ) -> Tuple[Dict[str, Any], Context]:
     state = await ctx.get("state") or {}
     state.setdefault(state_key, {})
@@ -84,8 +76,8 @@ async def update_ctx_data(
 
 
 async def adjust_plan(
-        ctx: Context,
-        args: AdjustPlanArgs,
+    ctx: Context,
+    args: AdjustPlanArgs,
 ):
     """
     修改用户的健身计划，包括：
@@ -153,15 +145,17 @@ async def adjust_plan(
                 modified_params.append(key)
 
             # 无论如何都添加到payload和state中
-            # payload, ctx = await update_ctx_data(
-            #     ctx=ctx,
-            #     key=key,
-            #     value=value,
-            #     payload=payload,
-            #     state_key="workout_plan_params",
-            # )
+            payload, ctx = await update_ctx_data(
+                ctx=ctx,
+                key=key,
+                value=value,
+                payload=payload,
+                state_key="workout_plan_params",
+            )
 
-        result = await safe_put_with_retry(payload=payload, request_name="Plan", ctx=ctx)
+        result = await safe_put_with_retry(
+            payload=payload, request_name="Plan", ctx=ctx
+        )
 
         # 判断哪些参数被修改了
         if modified_params:
@@ -176,8 +170,8 @@ async def adjust_plan(
 
 
 async def update_basic_information(
-        ctx: Context,
-        args: UpdateBasicInformationArgs,
+    ctx: Context,
+    args: UpdateBasicInformationArgs,
 ):
     """
     修改用户的基础信息，只包括：
@@ -202,7 +196,6 @@ async def update_basic_information(
     """
     args = dict(args)
     logger.info(f"修改用户信息, Args: {args}, Type: {type(args)}")
-    logger.info(f"Ctx: {ctx.data}")
     basic_information_list = [
         {"key": "nickname", "value": args.get("nickname", "")},
         {"key": "age", "value": args.get("age", "")},
@@ -214,13 +207,13 @@ async def update_basic_information(
     for basic_information in basic_information_list:
         key = basic_information.get("key")
         value = basic_information.get("value")
-        # payload, ctx = await update_ctx_data(
-        #     ctx=ctx,
-        #     key=key,
-        #     value=value,
-        #     payload=payload,
-        #     state_key="basic_info_params",
-        # )
+        payload, ctx = await update_ctx_data(
+            ctx=ctx,
+            key=key,
+            value=value,
+            payload=payload,
+            state_key="basic_info_params",
+        )
     logger.info(f"Payload: {payload}")
     result = await safe_put_with_retry(
         payload=payload, request_name="Basic Information", ctx=ctx

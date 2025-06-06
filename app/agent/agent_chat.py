@@ -25,11 +25,6 @@ async def multi_agent_chat(
     memory = await memory_manager.init_memory()
     logger.info(f"初始化Memory完成，用户ID: {user_id}")
 
-    # 添加用户消息到Memory，避免重复添加
-    user_message = ChatMessage(role=MessageRole.USER, content=query)
-    # memory.put(user_message)
-    logger.debug(f"添加用户消息到Memory: {query}")
-
     # 根据用户语言，初始化Agent
     client = AgentInit(user_language=user_language)
     agent_workflow = client.create_multi_agent_system()
@@ -38,7 +33,7 @@ async def multi_agent_chat(
     ctx = Context(agent_workflow)
     await ctx.set("user_id", user_id)
     await ctx.set("memory", memory)
-    logger.debug(f"Start Memory: {memory.get_all()}")
+
     # 运行Agent工作流 - 非流式处理
     response_content = ""
     current_agent = ""
@@ -101,21 +96,21 @@ async def multi_agent_chat(
         handler = agent_workflow.run(user_msg=ChatMessage(content=query), ctx=ctx, verbose=True, memory=memory)
         async for event in handler.stream_events():
             if isinstance(event, AgentOutput):
-                logger.debug(f"Event: {event.response}")
+                logger.debug(f"AgentOutput: {event.current_agent_name}")
+                logger.debug(f"AgentOutput: {event.response.content}")
                 if event.response.role == "assistant":
                     response_content = event.response.content
                     current_agent = event.current_agent_name
 
             if isinstance(event, ToolCall):
-                logger.debug(f"Event: {event.tool_name}")
-                logger.debug(f"Event: {event.tool_kwargs}")
+                logger.debug(f"ToolCall: {event.tool_name}")
+                logger.debug(f"ToolCall: {event.tool_kwargs}")
             if isinstance(event, ToolCallResult):
-                logger.debug(f"Event: {event.tool_name}")
-                logger.debug(f"Event: {event.tool_output}")
-            logger.debug("*" * 100)
+                logger.debug(f"ToolCallResult: {event.tool_name}")
+                logger.debug(f"ToolCallResult: {event.tool_output}")
 
-        logger.debug(f"End Memory: {memory.get_all()}")
         await memory_manager.save_memory_to_redis(memory)
+
         logger.info(f"Response content: {response_content}")
         return {
             "response": response_content,

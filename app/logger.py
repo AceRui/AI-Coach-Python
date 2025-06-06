@@ -30,7 +30,7 @@ def get_logger(log_name: Optional[str] = None):
     logger.remove()
 
     # 控制台输出
-    logger.add(sys.stderr, level="INFO",
+    logger.add(sys.stderr, level="DEBUG",
                format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level}</level> | <cyan>{name}:{line}</cyan> - <level>{message}</level>")
 
     # 文件输出

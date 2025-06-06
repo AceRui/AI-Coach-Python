@@ -71,6 +71,50 @@ st.markdown("""
     background-color: #f44336;
 }
 
+.chat-input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.chat-container {
+    margin-bottom: 120px; /* 为底部输入框留出空间 */
+    padding-bottom: 2rem;
+}
+
+.language-selector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.language-option {
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.language-option.active {
+    background-color: #1f77b4;
+    color: white;
+}
+
+.language-option:hover:not(.active) {
+    background-color: #e3f2fd;
+}
+
+/* 隐藏Streamlit默认元素 */
+#MainMenu {visibility: hidden;}
+.stDeployButton {display:none;}
+footer {visibility: hidden;}
+
 .welcome-card {
     text-align: center;
     padding: 2rem;
@@ -159,38 +203,46 @@ with st.sidebar:
     # 语言选择
     language = st.selectbox(
         "选择语言",
-        options=["zh", "en"],
+        options=[
+            "zh",  # Chinese (Simplified)
+            "zh-TW",  # Chinese (Traditional)
+            "en",  # English
+            "fr",  # French
+            "de",  # German
+            "es",  # Spanish
+            "pt",  # Portuguese
+            "it",  # Italian
+            "ru",  # Russian
+            "ja",  # Japanese
+            "ko",  # Korean
+            "ar",  # Arabic
+            "hi",  # Hindi
+            "th",  # Thai
+            "vi",  # Vietnamese
+            "tr",  # Turkish
+            "nl",  # Dutch
+            "pl",  # Polish
+            "uk",  # Ukrainian
+            "id",  # Indonesian
+            "el",  # Greek
+            "hu",  # Hungarian
+            "cs",  # Czech
+            "ro",  # Romanian
+            "he",  # Hebrew
+            "sv",  # Swedish
+            "fi",  # Finnish
+            "da",  # Danish
+            "no"  # Norwegian
+        ],
         format_func=lambda x: "🇨🇳 中文" if x == "zh" else "🇺🇸 English",
         help="选择对话语言"
     )
 
-    st.markdown("---")
-
-    # 操作按钮
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🗑️ 清除历史", type="secondary", use_container_width=True):
-            st.session_state.messages = []
-            st.rerun()
-
-    with col2:
-        if st.button("🔄 重新开始", type="secondary", use_container_width=True):
-            st.session_state.messages = []
-            st.session_state.user_id = str(uuid.uuid4())
-            st.rerun()
-
 # 主页面标题
 st.markdown('<h1 class="main-header">🏃‍♂️ AI Coach - 智能健身教练</h1>', unsafe_allow_html=True)
 
-# 欢迎信息
-if not st.session_state.messages:
-    st.markdown("""
-    <div class="welcome-card">
-        <h2>👋 欢迎使用AI Coach智能健身教练系统！</h2>
-        <p style="font-size: 1.1rem; margin: 1rem 0;">我是Sarah，你的专属AI健身教练团队负责人</p>
-        <p style="margin-top: 2rem; font-size: 1rem; opacity: 0.9;">请在下方输入你的问题开始对话吧！</p>
-    </div>
-    """, unsafe_allow_html=True)
+# 创建聊天容器
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
 # 显示对话历史
 for i, message in enumerate(st.session_state.messages):
@@ -219,13 +271,15 @@ for i, message in enumerate(st.session_state.messages):
             st.markdown(f"""
             <div class="chat-message assistant-message">
                 <div class="agent-info">{agent_emoji} {agent_name}</div>
-                <strong>Sarah:</strong><br>
+                <strong>AI Coach:</strong><br>
                 {message["content"]}
             </div>
             """, unsafe_allow_html=True)
 
-# 聊天输入区域
-st.markdown("### 💬 开始对话")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# 聊天输入区域 - 移到页面底部
+st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
 
 with st.form(key="chat_form", clear_on_submit=True):
     # 输入区域
@@ -258,6 +312,8 @@ with st.form(key="chat_form", clear_on_submit=True):
         type="primary",
         use_container_width=True
     )
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # 处理用户输入
 if submit_button and user_input.strip():
@@ -319,7 +375,7 @@ if submit_button and user_input.strip():
                 response_container.markdown(f"""
                 <div class="chat-message assistant-message">
                     <div class="agent-info">{agent_emoji} {current_agent}</div>
-                    <strong>Sarah:</strong><br>
+                    <strong>AI Coach:</strong><br>
                     {full_response}
                 </div>
                 """, unsafe_allow_html=True)
